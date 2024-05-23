@@ -8,7 +8,18 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import WandbLogger
 from movqgan.util import instantiate_from_config
 import movqgan
+from transformers.utils import logging
 
+try:
+    pil_logger = logging.get_logger("PIL")
+    pil_logger.setLevel(logging.WARNING)
+
+    # logger = logging.get_logger("transformers")
+    # logger.setLevel(logging.WARNING)
+except:
+    pass
+import warnings
+warnings.filterwarnings("ignore")
 
 os.environ["WANDB_API_KEY"] = ""
 os.environ["WANDB_MODE"] = "online"

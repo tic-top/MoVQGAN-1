@@ -3,13 +3,13 @@ wandb_project_name: 'movq'
 
 trainer:
   log_every_n_steps: 10
-  precision: 32
+  precision: bf16
   gradient_clip_val: 1.0
   gradient_clip_algorithm: 'value'
   num_nodes: 1
   accelerator: 'gpu'
   strategy: 'ddp'
-  devices: 1
+  devices: 8
   max_steps: 9999999
   replace_sampler_ddp: false
 
@@ -56,8 +56,8 @@ model:
         
 data:
   train:
-    df_path: ./dataset.csv
+    mount_dir: /home/yilinjia/mycontainer/
     image_size: 256
-    batch_size: 20
+    batch_size: 8
     shuffle: true
-    num_workers: 12
+    num_workers: 8

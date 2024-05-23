@@ -13,13 +13,7 @@ import pytorch_lightning as pl
 
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 from tqdm import tqdm
-from random import randint
-
-import movqgan.data.datasets_cdip as datasets_cdip
-import movqgan.data.datasets_hwfont as datasets_hwfont
-import movqgan.data.datasets_gpt_ocr as datasets_gpt_ocr
-import movqgan.data.datasets_ft_ocr as datasets_ft_ocr
-import movqgan.data.datasets_mix as datasets_mix
+from random import randintz
 
 try:
     from torchvision.transforms import InterpolationMode
@@ -48,11 +42,9 @@ def _transform(n_px):
     )
 
 
-def center_crop(image, image_size):
+def center_crop(image):
     width, height = image.size
     new_size = min(width, height)
-    if new_size > 1.2 * image_size:
-        new_size = int(1.2 * image_size)
     left = (width - new_size) / 2
     top = (height - new_size) / 2
     right = (width + new_size) / 2
@@ -63,26 +55,33 @@ def center_crop(image, image_size):
 class ImageDataset(Dataset):
     def __init__(
         self,
-        mount_dir,
-        image_size=512,
+        df_path,
+        image_size=256,
         infinity=False,
     ):
-        self.train_dataset = datasets_cdip.CDIPDataset(mount_root=mount_dir)
+        self.df = pd.read_csv(df_path, sep='\t')
         self.image_size = image_size
         self.infinity = infinity
 
     def __len__(self):
-        return 99999999
+        if self.infinity:
+            return 99999999
+        else:
+            return len(self.df)
 
     def __getitem__(self, item):
-        image = self.train_dataset[0]['img']
-        image = center_crop(image, self.image_size)
+        if self.infinity:
+            ind = randint(0, len(self.df) - 1)
+        else:
+            ind = item
+        image = Image.open(self.df["image_name"].iloc[ind])
+        image = center_crop(image)
         image = image.resize(
             (self.image_size, self.image_size), resample=Image.BICUBIC, reducing_gap=1
         )
         image = np.array(image.convert("RGB"))
         image = image.astype(np.float32) / 127.5 - 1
-
+        
         return np.transpose(image, [2, 0, 1])
 
 

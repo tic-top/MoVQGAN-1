@@ -39,7 +39,7 @@ pip install "git+https://github.com/ai-forever/MoVQGAN.git"
 ```
 ### Train
 ```
-python main.py --config configs/movqgan_270M.yaml
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.py --config configs/movqgan_67M.yaml
 ```
 ### Inference
 Check jupyter notebook with example in `./notebooks` folder or [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1EVKDFsa17VgdyiaPdbKShBIm4N_18Xlj?usp=sharing)
